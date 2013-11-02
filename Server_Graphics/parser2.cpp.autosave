@@ -1,0 +1,152 @@
+#include "parser2.h"
+
+parser2::parser2()
+{
+}
+
+void parser2::outputQueue()
+{
+    deque<string>::iterator it;
+    it=output.begin();
+    while(it!=output.end())
+        cout<<" "<<*it++;
+}
+void parser2::InsertQueue(string str)
+{
+    int i=0;
+    do
+    {
+        cin >> b;
+        if(b!="x")
+            q.push(b);
+    } while (b!="x");
+}
+int parser2::PrintQueue()
+{
+    int NumParentesi=0;
+    //stampa la queue finchè non è vuota
+    while (!q.empty())
+    {
+        int exit=0,flag=0;
+        cout<<q.front()<<" ";
+        if(q.front()==")")//finchè il token in cima allo stack è una parentesi
+            //sinistra, leva gli operatori dallo stack e mettili sulla queue di output.
+        {
+            while(s.top()!="(")
+            {
+                output.push_back(s.top());
+                s.pop();
+            }
+            s.pop();
+            exit=1,flag=0,NumParentesi--;
+        }
+        while(exit==0)
+        {
+            //se sulla queue c'è un operatore controlla che lo stack non sia vuoto
+            if(q.front()=="+"||q.front()=="-"||q.front()=="/"||q.front()=="*" || q.front()=="^")
+            {
+                if(!s.empty())
+                {
+                    //tiene conto della precedenza degli operatori
+                    if(s.top()=="*"||s.top()=="-"||s.top()=="+"||s.top()=="/" || s.top()=="^")
+                    {
+                        if((s.top()=="+"||s.top()=="-")&&( q.front()=="*"||q.front()=="/"||q.front()=="^" ))
+                        {
+                            if(flag==0)
+                                s.push(q.front());
+                        }
+                        else if(s.top()=="*"||s.top()=="/" && q.front()=="^")
+                        {
+                            if (flag==0)
+                                s.push(q.front());
+                        }
+                        else
+                        {
+                            output.push_back(s.top());
+                            s.pop();
+                            s.push(q.front());
+                        }
+                    }
+                    else
+                        s.push(q.front());
+                }
+                else
+                    s.push(q.front());
+            }
+            //se sulla queue vi è una parentesi sinistra mettila sullo stack
+            //alza la flag cosi so che vi è una parentesi aperta
+            else if(q.front()=="(")
+            {
+                flag=1,NumParentesi++;
+                s.push("(");
+            }
+            //se sulla queue vi è un numero allora mettilo sulla queue di output
+            else
+                output.push_back(q.front());
+            exit=1;
+        }
+        q.pop();
+    }
+    if(NumParentesi!=0)
+    {
+        cout<<"errore nell'inserimento della stringa"<<endl;
+        return 1;
+    }
+    else
+        return 0;
+}
+void parser2::FinishWork()
+{
+    while(!s.empty())
+    {
+        if(s.top()=="+"||s.top()=="-"||s.top()=="/"||s.top()=="*" || s.top()=="^")
+            output.push_back(s.top());
+        s.pop();
+    }
+}
+void parser2::ResolveEquation()
+{
+    deque<string>::iterator it;
+    it=output.begin();
+    char* cstr=new char(2);
+    string str;
+    int count=0;
+    float tmp;
+    while (output.size()!=1)
+    {
+        if(*it=="*"||*it=="+"||*it=="/"||*it=="-" || *it=="^")
+        {
+            string sign=*it;
+            if(*it-->"-9999"||*it<"99999999"&&*it-->"-9999"||*it<"9999999999")
+            {
+                *it++,*it++;
+                output.erase(output.begin()+count);
+                it=output.begin()+(count-1);
+                str=*it;
+                strcpy(cstr,str.c_str());
+                tmp=atoi(cstr);
+                output.erase(output.begin()+(count-1));
+                it=output.begin()+(count-2),str=*it;
+                strcpy(cstr,str.c_str());
+                output.erase(output.begin()+(count-2));
+                if(sign=="+")
+                    tmp=tmp+atof(cstr);
+                else if(sign=="-")
+                    tmp=atof(cstr)-tmp;
+                else if(sign=="*")
+                    tmp=atof(cstr)*tmp;
+                else if (sign=="/")
+                    tmp=atof(cstr)/tmp;
+                else if(sign=="^")
+                    tmp=pow(atof(cstr),tmp);
+                itoa(tmp,cstr,10);
+                str=cstr;
+                output.insert(output.begin()+(count-2),str);
+                it=output.begin();
+                count=0;
+            }
+        }
+        *it++,count++;
+    }
+    cout<<output.front();
+}

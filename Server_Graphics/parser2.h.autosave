@@ -1,0 +1,33 @@
+#ifndef PARSER2_H
+#define PARSER2_H
+
+#include <QtCore/QCoreApplication>
+#include <iostream>
+#include <stack>
+#include <deque>
+#include <queue>
+#include <stdlib.h>
+#include <cstring>
+#include <string>
+#include <math.h>
+using namespace std;
+
+class parser2
+{
+public:
+    parser2();
+private:
+    stack<string> s;
+    queue<string> q;
+    deque<string> output;
+    string b;
+public:
+    void InsertQueue();
+    int PrintQueue();
+    void confronta();
+    void outputQueue();
+    void FinishWork();
+    void ResolveEquation();
+};
+
+#endif // PARSER2_H
